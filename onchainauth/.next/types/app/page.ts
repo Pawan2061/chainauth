@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// File: /Users/pawanpandey/Projects/super30/onchainauth/app/page.tsx
-=======
 // File: /Users/pawanpandey/Projects/super30/web3wallet/onchainauth/app/page.tsx
->>>>>>> 0e67c42 (feat: smart contract setup)
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

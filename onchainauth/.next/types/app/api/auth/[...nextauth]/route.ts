@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// File: /Users/pawanpandey/Projects/super30/onchainauth/app/api/auth/[...nextauth]/route.ts
-=======
 // File: /Users/pawanpandey/Projects/super30/web3wallet/onchainauth/app/api/auth/[...nextauth]/route.ts
->>>>>>> 0e67c42 (feat: smart contract setup)
 import * as entry from '../../../../../../app/api/auth/[...nextauth]/route.js'
 import type { NextRequest } from 'next/server.js'
 

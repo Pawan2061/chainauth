@@ -1,5 +1,6 @@
 "use client";
 
+import { SolanaWalletProvider } from "@/components/provider";
 import { SessionProvider } from "next-auth/react";
 import { RecoilRoot } from "recoil";
 
@@ -10,7 +11,9 @@ type Props = {
 export const Providers = ({ children }: Props) => {
   return (
     <SessionProvider>
-      <RecoilRoot>{children}</RecoilRoot>
+      <SolanaWalletProvider>
+        <RecoilRoot>{children}</RecoilRoot>
+      </SolanaWalletProvider>
     </SessionProvider>
   );
 };

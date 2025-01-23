@@ -49,7 +49,11 @@ export default function Vault() {
             >
               X
             </button>
-            <AddPassword vaults={vaults} addVault={addVault} />
+            <AddPassword
+              vaults={vaults}
+              addVault={addVault}
+              programId="2Ho6vDNZXrbSQxxwRbbRzYEgfgbkfkGMnVGes1PtefNz"
+            />
           </div>
         </div>
       )}
