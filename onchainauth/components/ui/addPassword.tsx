@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as web3 from "@solana/web3.js";
 import { useConnection } from "@solana/wallet-adapter-react";
+import { toast } from "sonner";
 
 type AddPasswordProps = {
   programId: string;
@@ -123,6 +124,10 @@ export function AddPassword({
           owner: wallet.publicKey.toBase58(),
           password: value,
         };
+        console.log("-----------------");
+
+        toast("successfully added on chain");
+        console.log("-----------------");
 
         onSuccess(newVault);
         setKey("");

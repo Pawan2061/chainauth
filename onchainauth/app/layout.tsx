@@ -6,6 +6,7 @@ import { Providers } from "./providers";
 import Navbar from "@/components/navbar";
 import Background from "@/components/background";
 import Recoilroot, { RecoilRoot } from "recoil";
+import { Toaster } from "@/components/ui/sonner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
         <Providers>
           <>
             <Navbar />
+            <Toaster />
             {children}
           </>
         </Providers>

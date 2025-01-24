@@ -63,7 +63,7 @@ export default function Vault() {
       </div>
       {showCard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className=" p-6 rounded-lg shadow-lg w-96 relative">
+          <div className="p-6 rounded-lg shadow-lg w-96 relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
               onClick={addNewVault}
@@ -71,8 +71,6 @@ export default function Vault() {
               X
             </button>
             <AddPassword
-              // vaults={vaults}
-              // addVault={addVault}
               programId="2Ho6vDNZXrbSQxxwRbbRzYEgfgbkfkGMnVGes1PtefNz"
               onSuccess={addVault}
               onClose={() => setShowCard(false)}
@@ -81,34 +79,32 @@ export default function Vault() {
         </div>
       )}
       <main className="space-y-4">
-        <div className="grid grid-cols-5 items-center gap-4 p-4 rounded-lg border bg-gray-600">
+        <div className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border bg-gray-600">
           <div className="flex items-center">
             <Checkbox />
           </div>
           <div className="font-medium">Names</div>
           <div className="font-medium">Owner</div>
           <div className="font-medium">Password</div>
-
           <div className="flex justify-end">
             <EllipsisVertical className="cursor-pointer" />
           </div>
         </div>
 
-        {vaults.map((vault) => (
+        {vaults.map((vault: any) => (
           <div
             key={vault.id}
-            className="grid grid-cols-5 items-center gap-4 p-4 rounded-lg border  transition-colors"
+            className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border transition-colors"
           >
             <div className="flex items-center">
               <Checkbox />
             </div>
-            <div className="text-sm">{vault.name}</div>
-            <div className="text-sm text-gray-600">{vault.owner}</div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm truncate">{vault.name}</div>
+            <div className="text-sm text-white truncate">{vault.owner}</div>
+            <div className="text-sm text-white truncate">
               {showPasswords[vault.id] ? vault.password : "••••••••"}
             </div>
-
-            <div className="flex justify-end left-0">
+            <div className="flex justify-end space-x-2">
               <Button
                 variant="ghost"
                 size="icon"
