@@ -1,109 +1,3 @@
-// import React, { useState } from "react";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { randomUUID } from "crypto";
-// type AddPasswordProps = {
-//   vaults: any[];
-//   addVault: (vault: {
-//     id: number;
-//     name: string;
-//     owner: string;
-//     password: string;
-//   }) => void;
-// };
-
-// export function AddPassword({ vaults, addVault }: AddPasswordProps) {
-//   const [key, setKey] = useState("");
-//   const [value, setValue] = useState("");
-
-//   const handleSubmit = (e: any) => {
-//     e.preventDefault();
-
-//     if (!key || !value) {
-//       alert("Key and Password cannot be empty!");
-//       return;
-//     }
-//     // vaults.push({
-//     //   id: 24,
-//     //   name: key,
-//     //   password: value,
-//     // });
-
-//     const newVault = {
-//       id: 322,
-//       name: key,
-//       owner: "kiran",
-//       password: value,
-//     };
-//     addVault(newVault);
-
-//     console.log(vaults, "vaults are heere");
-//     setKey("");
-//     setValue("");
-
-//     console.log("Submitted:", { key, value });
-//     // Add your deployment logic here
-//   };
-
-//   return (
-//     <Card className="w-[350px] z-40">
-//       <CardHeader>
-//         <CardTitle>Add a new Password</CardTitle>
-//         <CardDescription>
-//           Deploy your new Password in solana chain.
-//         </CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         <form onSubmit={handleSubmit}>
-//           <div className="grid w-full items-center gap-4">
-//             <div className="flex flex-col space-y-1.5">
-//               <Label htmlFor="key">Key</Label>
-//               <Input
-//                 id="key"
-//                 placeholder="Enter your key value"
-//                 value={key}
-//                 onChange={(e) => setKey(e.target.value)}
-//               />
-//               <Label htmlFor="value">Value</Label>
-//               <Input
-//                 id="value"
-//                 placeholder="Enter your Password value"
-//                 value={value}
-//                 onChange={(e) => setValue(e.target.value)}
-//               />
-//             </div>
-//           </div>
-//           <Button type="submit" className="mt-4 w-full">
-//             Deploy
-//           </Button>
-//         </form>
-//       </CardContent>
-//       <CardFooter className="flex justify-between">
-//         <Button
-//           type="button"
-//           variant="outline"
-//           className="text-black"
-//           onClick={() => {
-//             setKey("");
-//             setValue("");
-//           }}
-//         >
-//           Cancel
-//         </Button>
-//       </CardFooter>
-//     </Card>
-//   );
-// }
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -117,104 +11,138 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as web3 from "@solana/web3.js";
-import {
-  useAnchorWallet,
-  useConnection,
-  useWallet,
-} from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 
 type AddPasswordProps = {
-  vaults: any[];
-  addVault: (vault: {
+  programId: string;
+  onSuccess: (newVault: {
     id: number;
     name: string;
     owner: string;
     password: string;
   }) => void;
-  programId: string;
+  onClose: () => void;
 };
 
-export function AddPassword({ vaults, addVault, programId }: AddPasswordProps) {
+export function AddPassword({
+  programId,
+  onSuccess,
+  onClose,
+}: AddPasswordProps) {
   const [key, setKey] = useState("");
   const [value, setValue] = useState("");
   const { connection } = useConnection();
-  const wallet = window.solana;
-  // const walletn = useAnchorWallet();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!window.solana || !window.solana.isPhantom) {
-      alert("Phantom wallet not installed!");
+
+    if (!window.solana) {
+      alert("Please install Phantom wallet");
       return;
     }
 
     if (!key || !value) {
-      alert("Key and Password cannot be empty!");
+      alert("Please enter both key and password");
       return;
     }
 
-    console.log(wallet, "wallet");
-
     try {
-      await window.solana.connect();
-      console.log(window.solana);
+      const wallet = window.solana;
+      await wallet.connect();
 
       if (!wallet.publicKey) {
-        alert("Please connect your wallet first!");
+        alert("Please connect your wallet");
         return;
       }
-      const key = localStorage.getItem("pubkey");
 
-      const instruction = new web3.TransactionInstruction({
+      const newAccount = web3.Keypair.generate();
+
+      const keyBuffer = Buffer.from(key);
+      const valueBuffer = Buffer.from(value);
+      const totalSpace = keyBuffer.length + valueBuffer.length + 100;
+
+      const createInstruction = web3.SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey,
+        newAccountPubkey: newAccount.publicKey,
+        space: totalSpace,
+        lamports: await connection.getMinimumBalanceForRentExemption(
+          totalSpace
+        ),
+        programId: new web3.PublicKey(programId),
+      });
+
+      const instructionData = Buffer.concat([
+        Buffer.from([0]),
+        Buffer.from([keyBuffer.length]),
+        keyBuffer,
+        valueBuffer,
+      ]);
+
+      const storeInstruction = new web3.TransactionInstruction({
         keys: [
           {
-            // @ts-ignore
-            pubkey: new web3.PublicKey(key!),
+            pubkey: newAccount.publicKey,
             isSigner: true,
             isWritable: true,
           },
+          {
+            pubkey: wallet.publicKey,
+            isSigner: true,
+            isWritable: true,
+          },
+          {
+            pubkey: web3.SystemProgram.programId,
+            isSigner: false,
+            isWritable: false,
+          },
         ],
         programId: new web3.PublicKey(programId),
-        data: Buffer.concat([
-          Buffer.from([0]),
-          Buffer.from(key!.padEnd(32, "\0").slice(0, 32)),
-          Buffer.from(value),
-        ]),
+        data: instructionData,
       });
+
+      const transaction = new web3.Transaction()
+        .add(createInstruction)
+        .add(storeInstruction);
+
       const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = wallet.publicKey;
 
-      const transaction = new web3.Transaction({
-        recentBlockhash: blockhash,
-        feePayer: wallet.publicKey,
-      }).add(instruction);
+      transaction.sign(newAccount);
+      const signed = await wallet.signTransaction(transaction);
 
-      const signature = await wallet.signAndSendTransaction(
-        transaction,
-        connection
-      );
-      await connection.confirmTransaction(signature);
+      try {
+        const signature = await connection.sendRawTransaction(
+          signed.serialize()
+        );
+        await connection.confirmTransaction(signature);
 
-      const newVault = {
-        id: Date.now(),
-        name: key!,
-        owner: wallet.publicKey.toBase58(),
-        password: value,
-      };
+        const newVault = {
+          id: Date.now(),
+          name: key,
+          owner: wallet.publicKey.toBase58(),
+          password: value,
+        };
 
-      addVault(newVault);
-
-      setKey("");
-      setValue("");
-
-      alert("Password successfully deployed to Solana!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to deploy password");
+        onSuccess(newVault);
+        setKey("");
+        setValue("");
+        onClose();
+      } catch (txError: any) {
+        console.error("Transaction failed:", txError);
+        if (txError.logs) {
+          console.error("Program logs:", txError.logs);
+        }
+        alert(`Failed to store password: ${txError.message}`);
+      }
+    } catch (err: any) {
+      console.error("Error:", err);
+      alert(`Failed to store password: ${err.message}`);
     }
   };
 
   return (
-    <Card className="w-[350px] z-40">
+    <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>Add a new Password</CardTitle>
         <CardDescription>
@@ -225,37 +153,32 @@ export function AddPassword({ vaults, addVault, programId }: AddPasswordProps) {
         <form onSubmit={handleSubmit}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="key">Key</Label>
+              <Label htmlFor="key">Name</Label>
               <Input
                 id="key"
-                placeholder="Enter your key value"
+                placeholder="Enter name for this password"
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
               />
-              <Label htmlFor="value">Value</Label>
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="value">Password</Label>
               <Input
                 id="value"
-                placeholder="Enter your Password value"
+                type="password"
+                placeholder="Enter your password"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
               />
             </div>
           </div>
-          <Button type="submit" className="mt-4 w-full">
-            Deploy
+          <Button type="submit" className="mt-6 w-full">
+            Deploy Password
           </Button>
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button
-          type="button"
-          variant="outline"
-          className="text-black"
-          onClick={() => {
-            setKey("");
-            setValue("");
-          }}
-        >
+        <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
       </CardFooter>

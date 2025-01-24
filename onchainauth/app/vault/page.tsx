@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Eye, EyeOff } from "lucide-react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { fontSizeState, vaultsState, walletAddress } from "../../recoil/index";
 import { AddPassword } from "@/components/ui/addPassword";
@@ -12,6 +12,13 @@ import { useVaultStore } from "@/store/vault";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
+type Vault = {
+  id: number;
+  name: string;
+  owner: string;
+  password: string;
+};
+
 export default function Vault() {
   const { vaults, addVault } = useVaultStore();
   const wallet = window.solana;
@@ -19,6 +26,9 @@ export default function Vault() {
 
   const [showCard, setShowCard] = useState(false);
   const setPassword = useSetRecoilState(walletAddress);
+  const [showPasswords, setShowPasswords] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const addPassword = (pubkey: string, key: string, password: string) => {
     setPassword((prevState) => ({
@@ -31,6 +41,13 @@ export default function Vault() {
 
   const addNewVault = () => {
     setShowCard(!showCard);
+  };
+
+  const togglePasswordVisibility = (id: number) => {
+    setShowPasswords((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   return (
@@ -54,9 +71,11 @@ export default function Vault() {
               X
             </button>
             <AddPassword
-              vaults={vaults}
-              addVault={addVault}
+              // vaults={vaults}
+              // addVault={addVault}
               programId="2Ho6vDNZXrbSQxxwRbbRzYEgfgbkfkGMnVGes1PtefNz"
+              onSuccess={addVault}
+              onClose={() => setShowCard(false)}
             />
           </div>
         </div>
@@ -85,9 +104,23 @@ export default function Vault() {
             </div>
             <div className="text-sm">{vault.name}</div>
             <div className="text-sm text-gray-600">{vault.owner}</div>
-            <div className="text-sm text-gray-600 ">{vault.password}</div>
+            <div className="text-sm text-gray-600">
+              {showPasswords[vault.id] ? vault.password : "••••••••"}
+            </div>
 
             <div className="flex justify-end left-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => togglePasswordVisibility(vault.id)}
+              >
+                {showPasswords[vault.id] ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"
@@ -99,6 +132,12 @@ export default function Vault() {
             </div>
           </div>
         ))}
+
+        {vaults.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No passwords stored yet. Click "New Password" to add one.
+          </div>
+        )}
       </main>
     </section>
   );

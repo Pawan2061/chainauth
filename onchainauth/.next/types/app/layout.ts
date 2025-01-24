@@ -1,4 +1,4 @@
-// File: /Users/pawanpandey/Projects/super30/web3wallet/onchainauth/app/layout.tsx
+// File: /Users/pawanpandey/Projects/super30/chainauth/onchainauth/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
