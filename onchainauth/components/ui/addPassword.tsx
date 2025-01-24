@@ -124,10 +124,8 @@ export function AddPassword({
           owner: wallet.publicKey.toBase58(),
           password: value,
         };
-        console.log("-----------------");
 
         toast("successfully added on chain");
-        console.log("-----------------");
 
         onSuccess(newVault);
         setKey("");

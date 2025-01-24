@@ -940,8 +940,8 @@ video {
 .inset-0 {
   inset: 0px;
 }
-.left-0 {
-  left: 0px;
+.left-2 {
+  left: 0.5rem;
 }
 .left-\[50\%\] {
   left: 50%;
@@ -985,6 +985,12 @@ video {
 .mb-8 {
   margin-bottom: 2rem;
 }
+.ml-auto {
+  margin-left: auto;
+}
+.mr-2 {
+  margin-right: 0.5rem;
+}
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1016,6 +1022,9 @@ video {
 .h-10 {
   height: 2.5rem;
 }
+.h-2 {
+  height: 0.5rem;
+}
 .h-3\.5 {
   height: 0.875rem;
 }
@@ -1043,6 +1052,9 @@ video {
 .min-h-screen {
   min-height: 100vh;
 }
+.w-2 {
+  width: 0.5rem;
+}
 .w-3\.5 {
   width: 0.875rem;
 }
@@ -1067,9 +1079,6 @@ video {
 .w-full {
   width: 100%;
 }
-.w-fit {
-  width: fit-content;
-}
 .min-w-\[8rem\] {
   min-width: 8rem;
 }
@@ -1084,9 +1093,6 @@ video {
 }
 .max-w-xl {
   max-width: 36rem;
-}
-.max-w-sm {
-  max-width: 24rem;
 }
 .shrink-0 {
   flex-shrink: 0;
@@ -1110,9 +1116,6 @@ video {
 }
 .resize {
   resize: both;
-}
-.grid-cols-5 {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .grid-cols-\[auto\2c 2fr\2c 2fr\2c 2fr\2c auto\] {
   grid-template-columns: auto 2fr 2fr 2fr auto;
@@ -1144,8 +1147,10 @@ video {
 .gap-6 {
   gap: 1.5rem;
 }
-.gap-3 {
-  gap: 0.75rem;
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .space-y-1\.5 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
@@ -1156,11 +1161,6 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
-}
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .overflow-hidden {
   overflow: hidden;
@@ -1253,6 +1253,9 @@ video {
 .bg-\[linear-gradient\(-75deg\2c hsl\(var\(--primary\)\/10\%\)_calc\(var\(--x\)\+20\%\)\2c hsl\(var\(--primary\)\/50\%\)_calc\(var\(--x\)\+25\%\)\2c hsl\(var\(--primary\)\/10\%\)_calc\(var\(--x\)\+100\%\)\)\] {
   background-image: linear-gradient(-75deg,hsl(var(--primary)/10%) calc(var(--x) + 20%),hsl(var(--primary) / 50%) calc(var(--x) + 25%),hsl(var(--primary) / 10%) calc(var(--x) + 100%));
 }
+.fill-current {
+  fill: currentColor;
+}
 .p-1 {
   padding: 0.25rem;
 }
@@ -1267,9 +1270,6 @@ video {
 }
 .p-px {
   padding: 1px;
-}
-.p-2 {
-  padding: 0.5rem;
 }
 .px-2 {
   padding-left: 0.5rem;
@@ -1313,6 +1313,12 @@ video {
 }
 .pl-2 {
   padding-left: 0.5rem;
+}
+.pl-8 {
+  padding-left: 2rem;
+}
+.pr-2 {
+  padding-right: 0.5rem;
 }
 .pr-8 {
   padding-right: 2rem;
@@ -1375,6 +1381,9 @@ video {
 .tracking-wide {
   letter-spacing: 0.025em;
 }
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
 .text-\[\#5046e6\] {
   --tw-text-opacity: 1;
   color: rgb(80 70 230 / var(--tw-text-opacity, 1));
@@ -1404,10 +1413,6 @@ video {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity, 1));
 }
-.text-gray-600 {
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
-}
 .text-muted-foreground {
   color: hsl(var(--muted-foreground));
 }
@@ -1419,6 +1424,10 @@ video {
 }
 .text-primary-foreground {
   color: hsl(var(--primary-foreground));
+}
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
 }
 .text-secondary-foreground {
   color: hsl(var(--secondary-foreground));
@@ -1436,6 +1445,9 @@ video {
 }
 .opacity-50 {
   opacity: 0.5;
+}
+.opacity-60 {
+  opacity: 0.6;
 }
 .opacity-70 {
   opacity: 0.7;
@@ -1506,6 +1518,9 @@ video {
 .duration-300 {
   transition-duration: 300ms;
 }
+.duration-500 {
+  transition-duration: 500ms;
+}
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1528,6 +1543,9 @@ video {
 }
 .duration-300 {
   animation-duration: 300ms;
+}
+.duration-500 {
+  animation-duration: 500ms;
 }
 .ease-in-out {
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -1637,8 +1655,18 @@ body {
   background-color: hsl(var(--accent));
 }
 
+.focus\:bg-red-100:focus {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1));
+}
+
 .focus\:text-accent-foreground:focus {
   color: hsl(var(--accent-foreground));
+}
+
+.focus\:text-red-900:focus {
+  --tw-text-opacity: 1;
+  color: rgb(127 29 29 / var(--tw-text-opacity, 1));
 }
 
 .focus\:outline-none:focus {
@@ -1903,6 +1931,15 @@ body {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+}
+
+.\[\&\>svg\]\:size-4>svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.\[\&\>svg\]\:shrink-0>svg {
+  flex-shrink: 0;
 }
 
 .\[\&_svg\]\:pointer-events-none svg {

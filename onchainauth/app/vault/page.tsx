@@ -1,16 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EllipsisVertical, Eye, EyeOff } from "lucide-react";
+import { EllipsisVertical, Eye, EyeOff, Trash2, Edit } from "lucide-react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { fontSizeState, vaultsState, walletAddress } from "../../recoil/index";
 import { AddPassword } from "@/components/ui/addPassword";
 import { useStore } from "zustand";
 import { useVaultStore } from "@/store/vault";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Vault = {
   id: number;
@@ -20,9 +26,8 @@ type Vault = {
 };
 
 export default function Vault() {
-  const { vaults, addVault } = useVaultStore();
+  const { vaults, addVault, removeVault } = useVaultStore();
   const wallet = window.solana;
-  console.log("wallet should ne here", wallet.publicKey);
 
   const [showCard, setShowCard] = useState(false);
   const setPassword = useSetRecoilState(walletAddress);
@@ -50,6 +55,14 @@ export default function Vault() {
     }));
   };
 
+  const handleDeleteVault = (vaultId: number) => {
+    removeVault(vaultId);
+  };
+
+  const handleUpdateVault = (vault: Vault) => {
+    console.log(`Updating vault ${vault.id}`);
+  };
+
   return (
     <section className={`container mx-auto max-w-6xl py-8 relative `}>
       <div className="flex items-center justify-between mb-8">
@@ -62,7 +75,7 @@ export default function Vault() {
         </Button>
       </div>
       {showCard && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 duration-500">
           <div className="p-6 rounded-lg shadow-lg w-96 relative">
             <button
               className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
@@ -91,7 +104,7 @@ export default function Vault() {
           </div>
         </div>
 
-        {vaults.map((vault: any) => (
+        {vaults.map((vault: Vault) => (
           <div
             key={vault.id}
             className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border transition-colors"
@@ -117,14 +130,27 @@ export default function Vault() {
                   <Eye className="h-4 w-4" />
                 )}
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => console.log(`Options for vault ${vault.id}`)}
-              >
-                <EllipsisVertical className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <EllipsisVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onSelect={() => handleUpdateVault(vault)}
+                  >
+                    <Edit className="mr-2 h-4 w-4" /> Update
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-500 focus:bg-red-100 focus:text-red-900"
+                    onSelect={() => handleDeleteVault(vault.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}

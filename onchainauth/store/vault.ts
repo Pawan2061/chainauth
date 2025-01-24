@@ -22,8 +22,9 @@ type VaultState = {
 
 type VaultStateActions = {
   addVault: (vault: Vault) => void;
+  removeVault: (vaultId: number) => void;
+  updateVault: (updatedVault: Vault) => void;
 };
-
 export const useVaultStore = create<VaultState & VaultStateActions>((set) => ({
   vaults: [
     {
@@ -33,10 +34,21 @@ export const useVaultStore = create<VaultState & VaultStateActions>((set) => ({
       password: "lado",
     },
   ],
-
   addVault: (vault: Vault) => {
     set((state) => ({
-      vaults: [...state.vaults, vault],
+      vaults: [...state.vaults, { ...vault, id: Date.now() }],
+    }));
+  },
+  removeVault: (vaultId: number) => {
+    set((state) => ({
+      vaults: state.vaults.filter((vault) => vault.id !== vaultId),
+    }));
+  },
+  updateVault: (updatedVault: Vault) => {
+    set((state) => ({
+      vaults: state.vaults.map((vault) =>
+        vault.id === updatedVault.id ? { ...updatedVault } : vault
+      ),
     }));
   },
 }));
