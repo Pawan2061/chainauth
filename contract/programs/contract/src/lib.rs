@@ -32,7 +32,6 @@ pub fn create_new_key(
     let account_info = &accounts[0];
     let mut data = PasswordManager::try_from_slice(&account_info.data.borrow())?;
     
-    // Check if the key already exists
     for password in &data.passwords {
         if password.key == key {
             return Err(solana_program::program_error::ProgramError::InvalidInstructionData);

@@ -9,9 +9,13 @@ import { fontSizeState, vaultsState, walletAddress } from "../../recoil/index";
 import { AddPassword } from "@/components/ui/addPassword";
 import { useStore } from "zustand";
 import { useVaultStore } from "@/store/vault";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 
 export default function Vault() {
   const { vaults, addVault } = useVaultStore();
+  const wallet = window.solana;
+  console.log("wallet should ne here", wallet.publicKey);
 
   const [showCard, setShowCard] = useState(false);
   const setPassword = useSetRecoilState(walletAddress);

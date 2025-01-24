@@ -117,7 +117,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as web3 from "@solana/web3.js";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 
 type AddPasswordProps = {
   vaults: any[];
@@ -127,7 +131,7 @@ type AddPasswordProps = {
     owner: string;
     password: string;
   }) => void;
-  programId: string; // Add programId as a prop
+  programId: string;
 };
 
 export function AddPassword({ vaults, addVault, programId }: AddPasswordProps) {
@@ -135,7 +139,7 @@ export function AddPassword({ vaults, addVault, programId }: AddPasswordProps) {
   const [value, setValue] = useState("");
   const { connection } = useConnection();
   const wallet = window.solana;
-  // const wallet = useWallet();
+  // const walletn = useAnchorWallet();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,43 +157,52 @@ export function AddPassword({ vaults, addVault, programId }: AddPasswordProps) {
 
     try {
       await window.solana.connect();
+      console.log(window.solana);
 
       if (!wallet.publicKey) {
         alert("Please connect your wallet first!");
         return;
       }
-
-      console.log(wallet, "wallet");
-
-      console.log(wallet.publicKey, "pub key");
+      const key = localStorage.getItem("pubkey");
 
       const instruction = new web3.TransactionInstruction({
-        keys: [{ pubkey: wallet.publicKey, isSigner: true, isWritable: true }],
+        keys: [
+          {
+            // @ts-ignore
+            pubkey: new web3.PublicKey(key!),
+            isSigner: true,
+            isWritable: true,
+          },
+        ],
         programId: new web3.PublicKey(programId),
         data: Buffer.concat([
           Buffer.from([0]),
-          Buffer.from(key.padEnd(32, "\0").slice(0, 32)),
+          Buffer.from(key!.padEnd(32, "\0").slice(0, 32)),
           Buffer.from(value),
         ]),
       });
+      const { blockhash } = await connection.getLatestBlockhash();
 
-      const transaction = new web3.Transaction().add(instruction);
-      console.log(transaction, "trans here");
-      console.log(connection, "conn  here");
+      const transaction = new web3.Transaction({
+        recentBlockhash: blockhash,
+        feePayer: wallet.publicKey,
+      }).add(instruction);
 
-      const signature = await wallet.sendTransaction(transaction, connection);
+      const signature = await wallet.signAndSendTransaction(
+        transaction,
+        connection
+      );
       await connection.confirmTransaction(signature);
 
       const newVault = {
         id: Date.now(),
-        name: key,
+        name: key!,
         owner: wallet.publicKey.toBase58(),
         password: value,
       };
 
       addVault(newVault);
 
-      // Reset form
       setKey("");
       setValue("");
 
