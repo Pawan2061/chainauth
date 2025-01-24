@@ -16,6 +16,7 @@ import { getProvider } from "@/utils";
 import { getCsrfToken, signIn } from "next-auth/react";
 import bs58 from "bs58";
 import { Signature } from "@/utils/signature";
+import AnimatedCoolText from "@/components/ui/animated-cool-text";
 
 export default function Home() {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function Home() {
     <main className="relative min-h-screen w-full overflow-hidden">
       <Background />
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+      <div className="relative z-10 flex flex-col min-h-screen items-center justify-center p-4">
         {!showCard ? (
           <div className="flex flex-col max-w-xl">
             <BoxReveal boxColor="#5046e6" duration={0.5}>

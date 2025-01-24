@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { UpdateVaultModal } from "@/components/ui/updatePassword";
 
 type Vault = {
   id: number;
@@ -26,7 +27,10 @@ type Vault = {
 };
 
 export default function Vault() {
-  const { vaults, addVault, removeVault } = useVaultStore();
+  const { vaults, addVault, removeVault, updateVault } = useVaultStore();
+  const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
   const wallet = window.solana;
 
   const [showCard, setShowCard] = useState(false);
@@ -60,7 +64,13 @@ export default function Vault() {
   };
 
   const handleUpdateVault = (vault: Vault) => {
+    setSelectedVault(vault);
+    setIsUpdateModalOpen(true);
     console.log(`Updating vault ${vault.id}`);
+  };
+
+  const handleVaultUpdate = (updatedVault: Vault) => {
+    updateVault(updatedVault);
   };
 
   return (
@@ -103,6 +113,14 @@ export default function Vault() {
             <EllipsisVertical className="cursor-pointer" />
           </div>
         </div>
+        {selectedVault && (
+          <UpdateVaultModal
+            vault={selectedVault}
+            isOpen={isUpdateModalOpen}
+            onClose={() => setIsUpdateModalOpen(false)}
+            onUpdate={handleVaultUpdate}
+          />
+        )}
 
         {vaults.map((vault: Vault) => (
           <div
@@ -139,7 +157,7 @@ export default function Vault() {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onSelect={() => handleUpdateVault(vault)}
+                    onSelect={(e) => handleUpdateVault(vault)}
                   >
                     <Edit className="mr-2 h-4 w-4" /> Update
                   </DropdownMenuItem>

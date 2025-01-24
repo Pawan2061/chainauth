@@ -1,13 +1,5 @@
 import { create } from "zustand";
-
-type Password = {
-  key: string;
-  password: string;
-};
-
-type PasswordManagerState = {
-  [walletAddress: string]: Password[];
-};
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface Vault {
   id: number;
@@ -25,30 +17,39 @@ type VaultStateActions = {
   removeVault: (vaultId: number) => void;
   updateVault: (updatedVault: Vault) => void;
 };
-export const useVaultStore = create<VaultState & VaultStateActions>((set) => ({
-  vaults: [
+
+export const useVaultStore = create(
+  persist<VaultState & VaultStateActions>(
+    (set) => ({
+      vaults: [
+        {
+          id: 1,
+          name: "ankur",
+          owner: "ankur",
+          password: "lado",
+        },
+      ],
+      addVault: (vault: Vault) => {
+        set((state) => ({
+          vaults: [...state.vaults, { ...vault, id: Date.now() }],
+        }));
+      },
+      removeVault: (vaultId: number) => {
+        set((state) => ({
+          vaults: state.vaults.filter((vault) => vault.id !== vaultId),
+        }));
+      },
+      updateVault: (updatedVault: Vault) => {
+        set((state) => ({
+          vaults: state.vaults.map((vault) =>
+            vault.id === updatedVault.id ? { ...updatedVault } : vault
+          ),
+        }));
+      },
+    }),
     {
-      id: 1,
-      name: "ankur",
-      owner: "ankur",
-      password: "lado",
-    },
-  ],
-  addVault: (vault: Vault) => {
-    set((state) => ({
-      vaults: [...state.vaults, { ...vault, id: Date.now() }],
-    }));
-  },
-  removeVault: (vaultId: number) => {
-    set((state) => ({
-      vaults: state.vaults.filter((vault) => vault.id !== vaultId),
-    }));
-  },
-  updateVault: (updatedVault: Vault) => {
-    set((state) => ({
-      vaults: state.vaults.map((vault) =>
-        vault.id === updatedVault.id ? { ...updatedVault } : vault
-      ),
-    }));
-  },
-}));
+      name: "vault-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
