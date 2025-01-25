@@ -20,15 +20,15 @@ type Vault = {
 type UpdateVaultModalProps = {
   vault: Vault;
   isOpen: boolean;
-  onClose: () => void;
   onUpdate: (updatedVault: Vault) => void;
+  setIsUpdateModalOpen: React.Dispatch<boolean>;
 };
 
 export const UpdateVaultModal: React.FC<UpdateVaultModalProps> = ({
   vault,
   isOpen,
-  onClose,
   onUpdate,
+  setIsUpdateModalOpen,
 }) => {
   const [updatedVault, setUpdatedVault] = useState<Vault>(vault);
 
@@ -39,11 +39,11 @@ export const UpdateVaultModal: React.FC<UpdateVaultModalProps> = ({
 
   const handleSubmit = () => {
     onUpdate(updatedVault);
-    onClose();
+    setIsUpdateModalOpen(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(state) => setIsUpdateModalOpen(state)}>
       <DialogContent className="sm:max-w-[425px] bg-slate-700">
         <DialogHeader>
           <DialogTitle>Update Vault</DialogTitle>

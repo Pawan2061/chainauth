@@ -117,7 +117,7 @@ export default function Vault() {
           <UpdateVaultModal
             vault={selectedVault}
             isOpen={isUpdateModalOpen}
-            onClose={() => setIsUpdateModalOpen(false)}
+            setIsUpdateModalOpen={setIsUpdateModalOpen}
             onUpdate={handleVaultUpdate}
           />
         )}
