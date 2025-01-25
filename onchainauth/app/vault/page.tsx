@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EllipsisVertical, Eye, EyeOff, Trash2, Edit } from "lucide-react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { fontSizeState, vaultsState, walletAddress } from "../../recoil/index";
+import { useSetRecoilState } from "recoil";
+import { walletAddress } from "../../recoil/index";
 import { AddPassword } from "@/components/ui/addPassword";
-import { useStore } from "zustand";
 import { useVaultStore } from "@/store/vault";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,7 +122,7 @@ export default function Vault() {
         {vaults.map((vault: Vault) => (
           <div
             key={vault.id}
-            className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border transition-colors"
+            className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border hover:scale-110 delay-150 duration-300 ease-in-out  hover:-translate-y-1"
           >
             <div className="flex items-center">
               <Checkbox />
