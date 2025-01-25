@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EllipsisVertical, Eye, EyeOff, Trash2, Edit } from "lucide-react";
-import { useSetRecoilState } from "recoil";
-import { walletAddress } from "../../recoil/index";
 import { AddPassword } from "@/components/ui/addPassword";
 import { useVaultStore } from "@/store/vault";
 import {
@@ -16,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UpdateVaultModal } from "@/components/ui/updatePassword";
 import Background from "@/components/background";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 type Vault = {
   id: number;
@@ -28,21 +27,21 @@ export default function Vault() {
   const { vaults, addVault, removeVault, updateVault } = useVaultStore();
   const [selectedVault, setSelectedVault] = useState<Vault | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-
-  const wallet = window.solana;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const [showCard, setShowCard] = useState(false);
-  const setPassword = useSetRecoilState(walletAddress);
+  // const setPassword = useSetRecoilState(walletAddress);
   const [showPasswords, setShowPasswords] = useState<{
     [key: number]: boolean;
   }>({});
 
-  const addPassword = (pubkey: string, key: string, password: string) => {
-    setPassword((prevState) => ({
-      ...prevState,
-      [pubkey]: [...(prevState[pubkey] || []), { key, password }],
-    }));
-  };
+  // const addPassword = (pubkey: string, key: string, password: string) => {
+  //   setPassword((prevState) => ({
+  //     ...prevState,
+  //     [pubkey]: [...(prevState[pubkey] || []), { key, password }],
+  //   }));
+  // };
 
   console.log(localStorage.getItem("pubkey"));
 
@@ -71,10 +70,20 @@ export default function Vault() {
     updateVault(updatedVault);
   };
 
+  // Add these pagination helper functions
+  const indexOfLastVault = currentPage * itemsPerPage;
+  const indexOfFirstVault = indexOfLastVault - itemsPerPage;
+  const currentVaults = vaults.slice(indexOfFirstVault, indexOfLastVault);
+  const totalPages = Math.ceil(vaults.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <>
       <Background />
-      <section className={`container mx-auto max-w-6xl py-8 relative `}>
+      <section className={`container mx-auto max-w-6xl py-8 relative  `}>
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-semibold text-2xl">All vaults</h1>
           <Button
@@ -122,10 +131,10 @@ export default function Vault() {
             />
           )}
 
-          {vaults.map((vault: Vault) => (
+          {currentVaults.map((vault: Vault) => (
             <div
               key={vault.id}
-              className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border hover:scale-110  hover:cursor-pointer delay-150 duration-300 ease-in-out  hover:-translate-y-1 hover:bg-slate-500"
+              className="grid grid-cols-[auto,2fr,2fr,2fr,auto] items-center gap-6 p-4 rounded-lg border hover:scale-110  hover:cursor-pointer delay-150 duration-300 ease-in-out    hover:-translate-y-1 hover:bg-slate-700 overflow-y-auto"
             >
               <div className="flex items-center">
                 <Checkbox />
@@ -172,6 +181,43 @@ export default function Vault() {
               </div>
             </div>
           ))}
+
+          {vaults.length > 0 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 border-gray-600 bg-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                Previous
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-2 ${
+                      currentPage === page
+                        ? "bg-gray-600 hover:bg-slate-500 text-white"
+                        : "border-gray-600 bg-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+                    }`}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 border-gray-600 text-gray-300 bg-gray-600 hover:bg-gray-700 hover:text-white disabled:opacity-50 disabled:hover:bg-transparent"
+              >
+                Next
+              </Button>
+            </div>
+          )}
 
           {vaults.length === 0 && (
             <div className="text-center py-8 text-gray-500">
