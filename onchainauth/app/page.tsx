@@ -73,7 +73,6 @@ export default function Home() {
       <div className="relative z-10 flex flex-col min-h-screen items-center justify-start p-4">
         {!showCard ? (
           <>
-            {/* <TextRevealCardPreview /> */}
             <GooeyTextDemo />
 
             <div className="flex flex-col max-w-xl">
