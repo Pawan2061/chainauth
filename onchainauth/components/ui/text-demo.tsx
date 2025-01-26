@@ -1,9 +1,15 @@
 import { AnimatedText } from "@/components/ui/animated-underline-text-one";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 function DefaultDemo() {
   const router = useRouter();
-  return <AnimatedText text="Onchain Auth!" className="cursor-pointer" />;
+
+  return (
+    <Link href="/">
+      <AnimatedText text="Onchain Auth!" className="cursor-pointer" />
+    </Link>
+  );
 }
 
 function CustomStyleDemo() {

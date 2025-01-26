@@ -31,17 +31,9 @@ export default function Vault() {
   const itemsPerPage = 5;
 
   const [showCard, setShowCard] = useState(false);
-  // const setPassword = useSetRecoilState(walletAddress);
   const [showPasswords, setShowPasswords] = useState<{
     [key: number]: boolean;
   }>({});
-
-  // const addPassword = (pubkey: string, key: string, password: string) => {
-  //   setPassword((prevState) => ({
-  //     ...prevState,
-  //     [pubkey]: [...(prevState[pubkey] || []), { key, password }],
-  //   }));
-  // };
 
   console.log(localStorage.getItem("pubkey"));
 
@@ -70,7 +62,6 @@ export default function Vault() {
     updateVault(updatedVault);
   };
 
-  // Add these pagination helper functions
   const indexOfLastVault = currentPage * itemsPerPage;
   const indexOfFirstVault = indexOfLastVault - itemsPerPage;
   const currentVaults = vaults.slice(indexOfFirstVault, indexOfLastVault);

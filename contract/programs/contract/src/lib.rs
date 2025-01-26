@@ -6,137 +6,58 @@ use solana_program::{
     entrypoint::ProgramResult,
     msg,
     pubkey::Pubkey,
+    program_error::ProgramError,
     system_instruction,
+    system_program,
     sysvar::{rent::Rent, Sysvar},
 };
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub struct Password {
+pub struct PasswordAccount {
     pub key: String,
     pub value: String,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub struct PasswordManager {
-    pub passwords: Vec<Password>,
-}
-
-pub const PASSWORD_MANAGER_ACCOUNT: &[u8] = b"password_manager";
-
-pub fn create_new_key(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    key: String,
-    value: String,
-) -> ProgramResult {
-    let account_info = &accounts[0];
-    let mut data = PasswordManager::try_from_slice(&account_info.data.borrow())?;
-    
-    for password in &data.passwords {
-        if password.key == key {
-            return Err(solana_program::program_error::ProgramError::InvalidInstructionData);
-        }
-    }
-
-    data.passwords.push(Password { key, value });
-    data.serialize(&mut &mut account_info.data.borrow_mut()[..])?;
-    Ok(())
-}
-
-pub fn get_my_password(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-) -> ProgramResult {
-    let account_info = &accounts[0];
-    let data = PasswordManager::try_from_slice(&account_info.data.borrow())?;
-    
-    // For now, we'll just log the password info
-    for password in &data.passwords {
-        msg!("Key: {}, Value: {}", password.key, password.value);
-    }
-
-    Ok(())
-}
-
-pub fn delete_key(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    key: String,
-) -> ProgramResult {
-    let account_info = &accounts[0];
-    let mut data = PasswordManager::try_from_slice(&account_info.data.borrow())?;
-    
-    let mut index_to_remove = None;
-    for (i, password) in data.passwords.iter().enumerate() {
-        if password.key == key {
-            index_to_remove = Some(i);
-            break;
-        }
-    }
-
-    if let Some(index) = index_to_remove {
-        data.passwords.swap_remove(index);
-        data.serialize(&mut &mut account_info.data.borrow_mut()[..])?;
-    } else {
-        return Err(solana_program::program_error::ProgramError::InvalidInstructionData);
-    }
-
-    Ok(())
-}
-
-pub fn update_key(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    key: String,
-    new_value: String,
-) -> ProgramResult {
-    let account_info = &accounts[0];
-    let mut data = PasswordManager::try_from_slice(&account_info.data.borrow())?;
-
-    let mut found = false;
-    for password in &mut data.passwords {
-        if password.key == key {
-            password.value = new_value;
-            found = true;
-            break;
-        }
-    }
-
-    if found {
-        data.serialize(&mut &mut account_info.data.borrow_mut()[..])?;
-        Ok(())
-    } else {
-        Err(solana_program::program_error::ProgramError::InvalidInstructionData)
-    }
-}
-
-#[inline(always)]
-fn process_instruction(
+pub fn process_instruction(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
-    let instruction_type = instruction_data[0];
+    let accounts_iter = &mut accounts.iter();
+    let account = next_account_info(accounts_iter)?;
+    let user = next_account_info(accounts_iter)?;
+    let system_program = next_account_info(accounts_iter)?;
 
-    match instruction_type {
-        0 => {
-            let key = String::from_utf8(instruction_data[1..33].to_vec())?;
-            let value = String::from_utf8(instruction_data[33..].to_vec())?;
-            create_new_key(program_id, accounts, key, value)
-        }
-        1 => get_my_password(program_id, accounts),
-        2 => {
-            let key = String::from_utf8(instruction_data[1..33].to_vec())?;
-            delete_key(program_id, accounts, key)
-        }
-        3 => {
-            let key = String::from_utf8(instruction_data[1..33].to_vec())?;
-            let value = String::from_utf8(instruction_data[33..].to_vec())?;
-            update_key(program_id, accounts, key, value)
-        }
-        _ => Err(solana_program::program_error::ProgramError::InvalidInstructionData),
+    if !user.is_signer {
+        return Err(ProgramError::MissingRequiredSignature);
     }
+
+    if instruction_data.len() <= 1 {
+        msg!("Invalid instruction data length");
+        return Err(ProgramError::InvalidInstructionData);
+    }
+
+    let key_length = instruction_data[1] as usize;
+    let key_end = 2 + key_length;
+    
+    if instruction_data.len() <= key_end {
+        msg!("Invalid key data");
+        return Err(ProgramError::InvalidInstructionData);
+    }
+    
+    let key = String::from_utf8(instruction_data[2..key_end].to_vec())
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+
+    let value = String::from_utf8(instruction_data[key_end..].to_vec())
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+
+    msg!("Storing password for key: {}", key);
+    
+    let password = PasswordAccount { key, value };
+    password.serialize(&mut &mut account.data.borrow_mut()[..])?;
+
+    msg!("Password stored successfully");
+    Ok(())
 }
 
-#[cfg(not(feature = "no-entrypoint"))]
 solana_program::entrypoint!(process_instruction);
