@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UpdateVaultModal } from "@/components/ui/updatePassword";
 import Background from "@/components/background";
-import { ShinyButton } from "@/components/ui/shiny-button";
 
 type Vault = {
   id: number;
@@ -157,7 +156,7 @@ export default function Vault() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="cursor-pointer"
-                      onSelect={(e) => handleUpdateVault(vault)}
+                      onSelect={() => handleUpdateVault(vault)}
                     >
                       <Edit className="mr-2 h-4 w-4" /> Update
                     </DropdownMenuItem>
@@ -212,7 +211,7 @@ export default function Vault() {
 
           {vaults.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              No passwords stored yet. Click "New Password" to add one.
+              No passwords stored yet. Click New Password to add one.
             </div>
           )}
         </main>
