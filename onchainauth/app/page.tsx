@@ -30,46 +30,44 @@ export default function Home() {
 
       if (!provider) {
         window.open("https://phantom.app/", "_blank");
+        return;
       }
 
       const resp = await provider.connect();
       console.log("Connect", resp.publicKey.toString());
-      const csrf = await getCsrfToken();
-      console.log(csrf, "should behere");
 
-      if (resp && csrf) {
-        console.log(csrf, "csrf and resp is ", resp);
+      const nonce = Date.now().toString();
+      console.log("Using nonce:", nonce);
 
-        const noneUnit8 = Signature.create(csrf);
-        const { signature } = await provider.signMessage(noneUnit8);
-        const serializedSignature = bs58.encode(signature);
-        const message = {
-          host: window.location.host,
-          publicKey: resp.publicKey.toString(),
-          nonce: csrf,
-        };
-        console.log(message, "message is here");
+      const noneUnit8 = Signature.create(nonce);
+      const { signature } = await provider.signMessage(noneUnit8);
+      const serializedSignature = bs58.encode(signature);
+      const message = {
+        host: window.location.origin,
+        publicKey: resp.publicKey.toString(),
+        nonce: nonce,
+      };
+      console.log("Auth message:", message);
 
-        const response = await signIn("credentials", {
-          message: JSON.stringify(message),
-          signature: serializedSignature,
-          redirect: false,
-        });
-        console.log(response, "respons i here");
+      const response = await signIn("credentials", {
+        message: JSON.stringify(message),
+        signature: serializedSignature,
+        redirect: false,
+        callbackUrl: `${window.location.origin}/vault`,
+      });
+      console.log(response);
 
-        localStorage.setItem("pubkey", message.publicKey);
+      // if (response?.error) {
+      //   console.error("Sign in failed:", response.error);
+      //   return;
+      // }
 
-        router.push("/vault");
-
-        if (response?.error) {
-          console.log("Error occured:", response.error);
-          return;
-        }
-      } else {
-        console.log("Could not connect to wallet");
-      }
+      // if (response?.ok) {
+      localStorage.setItem("pubkey", message.publicKey);
+      router.push("/vault");
+      // }
     } catch (error) {
-      console.error(error);
+      console.error("Connection error:", error);
     }
   };
 
@@ -184,7 +182,8 @@ export default function Home() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         console.log("cliked ");
 
                         onConnect();

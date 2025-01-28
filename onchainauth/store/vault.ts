@@ -26,7 +26,7 @@ export const useVaultStore = create(
           id: 1,
           name: "ankur",
           owner: "ankur",
-          password: "lado",
+          password: "defaulttest",
         },
       ],
       addVault: (vault: Vault) => {
