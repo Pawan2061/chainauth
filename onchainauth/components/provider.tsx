@@ -13,7 +13,7 @@ import {
 import { clusterApiUrl } from "@solana/web3.js";
 import React, { useMemo } from "react";
 
-require("@solana/wallet-adapter-react-ui/styles.css");
+// require("@solana/wallet-adapter-react-ui/styles.css");
 
 export function SolanaWalletProvider({
   children,

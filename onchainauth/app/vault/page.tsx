@@ -34,8 +34,6 @@ export default function Vault() {
     [key: number]: boolean;
   }>({});
 
-  console.log(localStorage.getItem("pubkey"));
-
   const addNewVault = () => {
     setShowCard(!showCard);
   };
