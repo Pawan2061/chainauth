@@ -25,8 +25,11 @@ const providers = [
         return null;
       }
       const crsf = await getCsrfToken({ req: { ...req, body: null } });
+      console.log(crsf, "is here");
 
       if (!crsf) {
+        console.log("csrf is not there");
+
         return null;
       }
       const nonceUnit8 = Signature.create(crsf);

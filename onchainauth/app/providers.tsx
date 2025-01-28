@@ -11,9 +11,7 @@ type Props = {
 export const Providers = ({ children }: Props) => {
   return (
     <SessionProvider>
-      <SolanaWalletProvider>
-        <RecoilRoot>{children}</RecoilRoot>
-      </SolanaWalletProvider>
+      <SolanaWalletProvider>{children}</SolanaWalletProvider>
     </SessionProvider>
   );
 };

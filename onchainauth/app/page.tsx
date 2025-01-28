@@ -35,7 +35,11 @@ export default function Home() {
       const resp = await provider.connect();
       console.log("Connect", resp.publicKey.toString());
       const csrf = await getCsrfToken();
+      console.log(csrf, "should behere");
+
       if (resp && csrf) {
+        console.log(csrf, "csrf and resp is ", resp);
+
         const noneUnit8 = Signature.create(csrf);
         const { signature } = await provider.signMessage(noneUnit8);
         const serializedSignature = bs58.encode(signature);
@@ -44,12 +48,15 @@ export default function Home() {
           publicKey: resp.publicKey.toString(),
           nonce: csrf,
         };
+        console.log(message, "message is here");
 
         const response = await signIn("credentials", {
           message: JSON.stringify(message),
           signature: serializedSignature,
           redirect: false,
         });
+        console.log(response, "respons i here");
+
         localStorage.setItem("pubkey", message.publicKey);
 
         router.push("/vault");
