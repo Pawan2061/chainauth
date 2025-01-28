@@ -115,7 +115,7 @@ export default function Home() {
                     <span className="text-[#5046e6]">→</span>Protect your
                     password with your wallet public address{" "}
                     <span className="font-semibold text-[#5046e6]">
-                      Metamask{" "}
+                      Phantom{" "}
                     </span>
                     <span className="font-semibold text-[#5046e6]">or </span>
                     any{" "}
@@ -124,10 +124,6 @@ export default function Home() {
                     </span>
                     .
                   </p>
-                  {/* <p className="text-lg leading-relaxed text-gray-300">
-                    <span className="text-[#5046e6]">→</span> 100% open-source,
-                    and fully customizable.
-                  </p> */}
                 </motion.div>
               </BoxReveal>
 
