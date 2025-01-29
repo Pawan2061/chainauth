@@ -26,6 +26,7 @@ export default function Home() {
   const onConnect = async () => {
     try {
       const provider = getProvider();
+      console.log("Connecting to wallet...");
 
       if (!provider) {
         window.open("https://phantom.app/", "_blank");
@@ -33,23 +34,18 @@ export default function Home() {
       }
 
       const resp = await provider.connect();
-      const nonce = Date.now().toString();
-      const noneUnit8 = Signature.create(nonce);
-      const { signature } = await provider.signMessage(noneUnit8);
-      const serializedSignature = bs58.encode(signature);
+      console.log("Connected to wallet:", resp.publicKey.toString());
 
-      const message = {
-        publicKey: resp.publicKey.toString(),
-        nonce: nonce,
-      };
+      // Create a message for the user to sign
+      const message = new TextEncoder().encode(
+        `Welcome to Onchain Auth! Please sign this message to verify your wallet ownership.
+        Timestamp: ${Date.now()}`
+      );
 
-      await signIn("credentials", {
-        message: JSON.stringify(message),
-        signature: serializedSignature,
-        redirect: false,
-      });
+      const { signature } = await provider.signMessage(message);
+      console.log("Message signed successfully");
 
-      localStorage.setItem("pubkey", message.publicKey);
+      localStorage.setItem("pubkey", resp.publicKey.toString());
       router.push("/vault");
     } catch (error) {
       console.error("Connection error:", error);
