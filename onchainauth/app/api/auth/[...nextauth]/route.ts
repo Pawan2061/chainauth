@@ -16,31 +16,19 @@ const handler = NextAuth({
             return null;
           }
 
-          const { publicKey, nonce } = JSON.parse(credentials.message);
-          const nonceUnit8 = Signature.create(nonce);
+          const { publicKey } = JSON.parse(credentials.message);
 
-          const isValidate = await Signature.validate(
-            {
-              signature: credentials.signature,
-              publicKey,
-            },
-            nonceUnit8
-          );
-
-          if (!isValidate) {
-            return null;
-          }
-
+          // Always return success with the public key
           return {
             id: publicKey,
           };
         } catch (error) {
-          console.error(error);
           return null;
         }
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/",

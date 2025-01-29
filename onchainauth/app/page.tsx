@@ -26,7 +26,6 @@ export default function Home() {
   const onConnect = async () => {
     try {
       const provider = getProvider();
-      console.log("inside connect");
 
       if (!provider) {
         window.open("https://phantom.app/", "_blank");
@@ -34,38 +33,24 @@ export default function Home() {
       }
 
       const resp = await provider.connect();
-      console.log("Connect", resp.publicKey.toString());
-
       const nonce = Date.now().toString();
-      console.log("Using nonce:", nonce);
-
       const noneUnit8 = Signature.create(nonce);
       const { signature } = await provider.signMessage(noneUnit8);
       const serializedSignature = bs58.encode(signature);
+
       const message = {
-        host: window.location.origin,
         publicKey: resp.publicKey.toString(),
         nonce: nonce,
       };
-      console.log("Auth message:", message);
 
-      const response = await signIn("credentials", {
+      await signIn("credentials", {
         message: JSON.stringify(message),
         signature: serializedSignature,
         redirect: false,
-        callbackUrl: `${window.location.origin}/vault`,
       });
-      console.log(response);
 
-      // if (response?.error) {
-      //   console.error("Sign in failed:", response.error);
-      //   return;
-      // }
-
-      // if (response?.ok) {
       localStorage.setItem("pubkey", message.publicKey);
       router.push("/vault");
-      // }
     } catch (error) {
       console.error("Connection error:", error);
     }
