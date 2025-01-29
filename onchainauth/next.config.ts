@@ -5,13 +5,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Apply these headers to all routes, not just /api/auth
         source: "/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           {
             key: "Access-Control-Allow-Origin",
-            // In production, you should specify your actual domain
             value: process.env.NEXTAUTH_URL || "*",
           },
           {
@@ -36,7 +34,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Add specific headers for auth endpoints
         source: "/api/auth/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
@@ -49,12 +46,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Add any experimental features or additional configuration here
-  experimental: {
-    // Enable if you're using App Router
-    serverComponentsExternalPackages: [],
-  },
-  // Add this to ensure API routes are handled correctly
+  // Updated key
+  serverExternalPackages: [],
   async rewrites() {
     return [
       {

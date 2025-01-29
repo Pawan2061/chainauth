@@ -13,12 +13,13 @@ const handler = NextAuth({
       async authorize(credentials) {
         try {
           if (!credentials?.message || !credentials?.signature) {
+            console.log("inside the check");
+
             return null;
           }
 
           const { publicKey } = JSON.parse(credentials.message);
 
-          // Always return success with the public key
           return {
             id: publicKey,
           };
